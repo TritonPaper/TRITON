@@ -1,0 +1,27 @@
+#Ignore all model outputs (a bunch of images and big files)
+translator/trained_models/
+
+# Ignore all pycaches: https://stackoverflow.com/questions/56309100/how-to-ignore-the-same-name-directory-pycache-in-a-project
+**/__pycache__/
+__pycache__/
+
+#Ignore all .virtual_documents/
+.virtual_documents/
+**/.virtual_documents/
+
+#Ignore all .ipynb_checkpoints/
+**/.ipynb_checkpoints/
+.ipynb_checkpoints/
+
+#Ignore all untracked/ (this is for large files that are generated, that I don't want to save on github)
+**/untracked/
+untracked/
+
+#Ignore all vim swp files. I'm going to keep .un files though
+**/*.swp
+*.swp
+
+#Ignore all vim .un~ files (these are vim undo files)
+# **/*.un~
+# *.un~
+#NOTE: I'm keeping .un~ files so that I still have undo history when checking out previous commits.

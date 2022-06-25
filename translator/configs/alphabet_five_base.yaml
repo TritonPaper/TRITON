@@ -1,0 +1,132 @@
+# TRITON Config
+
+# Copyright (C) 2018 NVIDIA Corporation.  All rights reserved.
+# Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
+
+max_iter: 200000            # maximum number of training iterations
+batch_size: 5               # batch size
+image_save_iter: 250        # How often do you want to save output images during training
+image_display_iter: 250     # (How often to update train_current.png and test_current.png's) How often do you want to display output images during training
+display_size: 16            # How many images do you want to display each time
+snapshot_save_iter: 5000    # How often do you want to save trained models
+log_iter: 10                # How often do you want to log the training stats
+
+# other optimization options
+weight_decay: 0.0001          # weight decay
+beta1: 0.5                    # Adam parameter
+beta2: 0.999                  # Adam parameter
+init: kaiming                 # initialization [gaussian/kaiming/xavier/orthogonal]
+lr: 0.0001                    # initial learning rate lr_policy: step ### LEAVE THIS ALONE OR IT MIGHT NOT CONVERGE (even 10x is bad)
+step_size: 100000             # how often to decay learning rate
+gamma: 0.5                    # how much to decay learning rate
+
+#Weights
+gan_w: 1                   # weight of adversarial loss
+recon_x_w: 10              # weight of image reconstruction loss
+recon_c_w: 1               # weight of content reconstruction loss
+recon_x_cyc_w: 10          # weight of explicit style augmented cycle consistency loss
+view_consistency_w: 20     # Used to be called texture_loss_weight. Disable by setting to 0.
+texture_reality_a2b_w: 2   # Gotta rename this; it controls how much the texture and translations have to match. Disable by setting to 0.
+texture_reality_b2a_w: 0   # Gotta rename this; its like texture_reality_loss_weight but for photo-to-sim. Disable by setting to 0.
+color_loss_w: 0          # Set to 0 to disable color_loss
+
+view_consistency:
+  height,width: 128    #View consistency recovery size. Should be relatively small; we want many collisions to contribute to a std.
+  version: std         #std or var. It doens't seem to make much difference either way, but std is easier to visualize in the tutorial ipynb.
+
+texture:
+  height,width: 256    #Height and width of the learned texture, in pixels
+  multiplier: 1        #0 effectively disables the texture. 1 is the minimum value to cover all colors. Larger values give the texture more control (recall this texture is residual)
+  hint:multiplier: 1   #How much we add UVL or other non-learned hints to the texture.
+  lr_factor: 10        #Set to 0 to lock textures in-place. This specifies how much faster the texture learning rate is than the generator and discriminator
+  type: fourier        #Choices: fourier, raster, mlp
+  fourier:
+    scale: 10
+
+# segmentation:
+#   enabled: true #If this is false, none of the other segmentation settings matter
+#   batch_size: 5
+#
+# color_loss:
+#   #Disable color_loss by setting color_loss_w=0
+#   label_colors:
+#     #DEBUGGING COLORS (To make sure it works. Spoiler alert: It does!!)
+#     # - [1, 0, 0] # 0 : 0   Alphabet  Red
+#     # - [0, 1, 0] # 1 : 50  Rubiks    Green
+#     # - [0, 0, 1] # 2 : 100 Garlic    Blue
+#     # - [1, 1, 0] # 3 : 150 Apple     Yellow
+#     # - [0, 1, 1] # 4 : 200 Soda      Cyan
+#     # - [0, 0, 0] # 5 : 255 Table     Black
+#
+#     #COLORS EXTRACTED FROM GROUND TRUTH SEGMENTATION MAP
+#     # - [0.573, 0.54 , 0.496] # 0 : 0   Alphabet
+#     # - [0.433, 0.422, 0.2  ] # 1 : 50  Rubiks
+#     # - [0.717, 0.818, 0.844] # 2 : 100 Garlic
+#     # - [0.614, 0.435, 0.295] # 3 : 150 Apple
+#     # - [0.406, 0.335, 0.331] # 4 : 200 Soda
+#     # - [0.498, 0.506, 0.387] # 5 : 255 Table
+
+# MUNIT-related model options
+gen:
+  dim: 64                     # number of filters in the bottommost layer
+  mlp_dim: 256                # number of filters in MLP
+  activ: relu                 # activation function [relu/lrelu/prelu/selu/tanh]
+  n_downsample: 2             # number of downsampling layers in content encoder #I want to set this to 3 but I run out of VRAM....
+  n_res: 4                    # number of residual blocks in content encoder/decoder
+  pad_type: reflect           # padding type [zero/reflect]
+dis:
+  dim: 64                     # number of filters in the bottommost layer
+  norm: none                  # normalization layer [none/bn/in/ln]
+  activ: lrelu                # activation function [relu/lrelu/prelu/selu/tanh]
+  n_layer: 4                  # number of layers in D
+  gan_type: lsgan             # GAN loss [lsgan/nsgan]
+  num_scales: 3               # number ofu;es #ARE THESE THE THREE DISCRIMINATORS I SAW IN MUNIT?!?!?
+  pad_type: reflect           # padding type [zero/reflect]
+
+# data options
+input_dim_a: 6                    # number of image channels [1/3]
+input_dim_b: 3                    # number of image channels [1/3]
+num_workers: 8                    # number of data loading threads
+
+crop_image_height: 256            # random crop image of this height
+crop_image_width: 256             # random crop image of this width
+
+#GOOD RESOLUTION STAGES TO TRAIN BY:
+new_size_min_a: 256 # first (randomly) resize the shortest image side to this size
+new_size_max_a: 256
+new_size_min_b: 256
+new_size_max_b: 256
+
+#DATASET INFORMATION
+label_values: [0,50,100,150,200,255] #For 5 items
+data_root: ./datasets/alphabet_five  # dataset folder location
+
+#VARIANTS (Uncomment a below block to activate a variant):
+
+#NO CONSISTENCY OR TEXTURE
+# texture:multiplier   : 0
+# view_consistency_w   : 0
+# texture_reality_a2b_w: 0
+# texture_reality_b2a_w: 0
+
+#JUST TEXTURE
+# texture:multiplier   : 0
+
+#PURE TEXTURE REALITY
+# texture:multiplier      : 2
+# texture:hint:multiplier : 0
+# view_consistency_w   : 10
+# texture_reality_a2b_w: 3 #5 is too much, 2 isn't enough
+# texture_reality_b2a_w: 1.5
+# batch_size: 5
+# color_loss_w: 0          # Set to 0 to disable color_loss
+
+##0 iter
+new_size_min_a,new_size_max_a,new_size_min_b,new_size_max_b: 256
+
+####Uncomment at 50000 iter
+new_size_min_a,new_size_max_a,new_size_min_b,new_size_max_b: 320
+####Uncomment at 100000 iter
+new_size_min_a,new_size_max_a,new_size_min_b,new_size_max_b: 420
+####Uncomment at 100000 iter
+new_size_min_a,new_size_max_a,new_size_min_b,new_size_max_b: 512 #Set this to the height of the input data

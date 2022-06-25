@@ -1,0 +1,10 @@
+assets/naive_translation_samples_nonrandom.png filter=lfs diff=lfs merge=lfs -text
+assets/naive_translation_samples_nonrandom_nerfed.png filter=lfs diff=lfs merge=lfs -text
+assets/pure_view_consistency_samples.png filter=lfs diff=lfs merge=lfs -text
+assets/tex_view_consistency.png filter=lfs diff=lfs merge=lfs -text
+assets/tex_view_consistency_v0.0.4.png filter=lfs diff=lfs merge=lfs -text
+assets/tex_view_consistency_v0.0.4_tex.png filter=lfs diff=lfs merge=lfs -text
+assets/tex_view_consistency_v0.0.5_tex.png filter=lfs diff=lfs merge=lfs -text
+assets/texture_example.png filter=lfs diff=lfs merge=lfs -text
+assets/tex_view_consistency_v0.0.5.png filter=lfs diff=lfs merge=lfs -text
+assets/ filter=lfs diff=lfs merge=lfs -text

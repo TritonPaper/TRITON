@@ -1,0 +1,24 @@
+
+Removing Style from Generator A:
+	- Slight improvement in generating images A, but still large "errors", deformed tools...
+
+Let Generator B also generate Segmentation Map (supervised learning, with about half of the weights shared):
+	- Slight improvement in content consistency?
+
+Add noise to translated image:
+	- Stops generator from hiding the original image in the output.
+
+Label (segmentation) loss:
+	- Helps keeps structure in A->B. Because of the cycle loss, this automatically encourages that the structure must also be kept on the B->A translation. (Assuming that Seg_B works well)
+  - Note: Seg_B does not seem to work well enough. Probably discarding this.
+
+Adding label mask to style injection:
+  - Before normalization
+  - After normalization - this seems to enhance structural coherence during translation (TODO: verify after having trained longer).
+
+Noise in style injection:
+  - TODO
+
+Questions:
+	- Should maybe not differentiate between fat and diaphragm/abdominal wall?
+	- By learning generation gen A->B _at the same time_ as Seg_B, do we automatically learn a translation which is _easy_ to segment? (Seems to be the case. Discarded segmentation learning.)
